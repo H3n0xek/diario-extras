@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import RedirectView
@@ -115,5 +115,5 @@ def QueueDraft(RedirectView):
         status = self.get_status(pk, request.user)
         if self.queue_entry(status):
             return super(QueueDraft, self).get(request, *args, **kwargs)
-
+        return HttpResponse(status=403)
    
