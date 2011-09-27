@@ -22,6 +22,11 @@ class EntryStatus(models.Model):
     entry = models.ForeignKey(Entry, unique=True)
     status = models.IntegerField(choices=MODERATION_STATUS)
     comment = models.TextField(blank=True, null=True)
+
+    class Meta:
+        permissions=(
+            ('moderate_entries', 'Can moderate entries'),
+        )
   
 
 @receiver(post_save, sender=Entry)
