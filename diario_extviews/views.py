@@ -1,6 +1,8 @@
 from django.conf import settings
+from diario_extviews import settings as local_settings
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
+from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import RedirectView
@@ -56,7 +58,18 @@ class CreateDraft(CreateView):
     model = Entry
     form_class = EntryCreationForm
     template_name = 'diario/create_draft.html'
+    limit_exceed_template = 'limit_exceeded.html'
     context_object_name = 'form'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not local_settings.DIARIO_LIMIT_DRAFTS or request.user.is_superuser():
+            return super(CreateDraft, self).dispatch(request, *args, **kwargs)
+            
+        num_drafts = Entry.objects.filter(entrystatus__status=STATUS_DRAFT, author=request.user).count()
+        if num_drafts >= local_settings.DIARIO_MAX_DRAFTS:
+            return render(request, self.limit_exceed_template, {'limit': local_settings.DIARIO_MAX_DRAFTS })
+        return super(CreateDraft, self).dispatch(request, *args, **kwargs)
+        
     
     def get_initial(self):
         initial = super(CreateDraft, self).get_initial()
