@@ -1,0 +1,5 @@
+Extra application for Django Diario weblog framework.
+
+Features: 
+ * Article statuses: Draft, Queued, Rejected, Rewrite, Accepted (Published)
+ * Article moderation and editing
